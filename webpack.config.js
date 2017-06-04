@@ -3,11 +3,13 @@ var webpack = require('webpack')
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-    entry: ['./src/index.js', './src/themes.scss'],
+    entry: {
+        pagination:'./src'
+    },
     output: {
         path: path.resolve(__dirname, './dist'),
         publicPath: '/dist/',
-        filename: 'pagination.js',
+        filename: '[name].js',
         libraryTarget: "umd",
         library: "VDPagination",
     },
@@ -29,7 +31,7 @@ module.exports = {
             },
             { // sass / scss loader for webpack
                 test: /\.(sass|scss)$/,
-                loader: ExtractTextPlugin.extract("css-loader!sass-loader")
+                use : ExtractTextPlugin.extract(["css-loader","sass-loader"])
             },
             {
                 test: /\.js$/,

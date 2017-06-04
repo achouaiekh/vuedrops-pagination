@@ -6,30 +6,28 @@
             <a href="#"
                :class="{disabled: value === 1}"
                class="pagination__navigation prev"
-               @click="prev()"
+               @click.prevent="prev()"
             >
                 <i class="material-icons">chevron_left</i>
             </a>
         </li>
 
+
         <li>
-            <transition-group tag="ul" name="pages"
-                              class="pages">
-        <li class="pages__item" v-for="n in items" :key="n">
-            <a v-if="!isNaN(n)"
-               :href="link(n)"
-               v-text="n"
-               @click="to(n)"
-               :class="{active: value === n,}"
-               class="pages__link"
-            ></a>
+            <transition-group tag="ul" name="pages" class="pages">
+                <li class="pages__item" v-for="n in items" :key="n">
+                    <a v-if="!isNaN(n)"
+                       :href="link(n)"
+                       v-text="n"
+                       @click.prevent="to(n)"
+                       :class="{active: value === n,}"
+                       class="pages__link"
+                    />
 
-            <span v-else class="pages__more"><i class="material-icons">more_horiz</i></span>
+                    <span v-else class="pages__more"><i class="material-icons">more_horiz</i></span>
 
-        </li>
-
-        </transition-group>
-
+                </li>
+            </transition-group>
         </li>
 
 
@@ -37,7 +35,7 @@
             <a href="#"
                :class="{disabled: value === length}"
                class="pagination__navigation next"
-               @click="next()"
+               @click.prevent="next()"
             >
                 <i class="material-icons">chevron_right</i>
             </a>
@@ -57,7 +55,7 @@
 
             href: {
                 type: String,
-                default: "#"
+                default: "#!"
             },
 
             length: {
@@ -121,19 +119,21 @@
             prev(){
                 if (this.value === 1) return
                 this.value--
-                this.$emit("prev")
+                this.$emit("prev", this.value)
+                return false
             },
 
             to(value){
                 this.value = value
-                this.$emit("to")
+                this.$emit("to", this.value)
+                return false
             },
 
             next(){
-                console.log(this.range(1, 7))
                 if (this.value === this.length) return
                 this.value++
-                this.$emit("next")
+                this.$emit("next", this.value)
+                return false
             }
         }
     }
@@ -160,7 +160,7 @@
 
             a, span {
                 padding: 0;
-                margin:0;
+                margin: 0;
                 color: coral;
                 text-decoration: none;
 
@@ -175,6 +175,13 @@
             }
         }
     }
+
+    /*.pages-enter-active, .pages-leave-active {
+        transition: opacity .5s
+    }
+    .pages-enter, .pages-leave-to !* .fade-leave-active in <2.1.8 *! {
+        opacity: 0
+    }*/
 
     .pages-move {
         transition: transform 1s;
