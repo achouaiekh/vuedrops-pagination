@@ -1,6 +1,6 @@
 <template>
 
-    <ul class="dot puff pagination">
+    <ul class="pagination">
 
         <li>
             <a href="#"
@@ -14,8 +14,6 @@
 
         <li>
             <transition-group tag="ul" name="pages"
-                              enter-active-class="animated tada"
-                              leave-active-class="animated fadeOut"
                               class="pages">
         <li class="pages__item" v-for="n in items" :key="n">
             <a v-if="!isNaN(n)"
