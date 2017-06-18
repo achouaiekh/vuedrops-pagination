@@ -2,14 +2,17 @@ var path = require('path')
 var webpack = require('webpack')
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
+
+
 module.exports = {
     entry: {
         pagination:'./src'
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        publicPath: '/dist/',
+        publicPath: '/dist',
         filename: '[name].js',
+        // chunkFilename: "[id].js",
         libraryTarget: "umd",
         library: "VDPagination",
     },
@@ -29,9 +32,15 @@ module.exports = {
                     // other vue-loader options go here
                 }
             },
-            { // sass / scss loader for webpack
-                test: /\.(sass|scss)$/,
-                use : ExtractTextPlugin.extract(["css-loader","sass-loader"])
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract({fallback: "style-loader", use: "css-loader"})
+            },
+            // Optionally extract less files
+            // or any other compile-to-css language
+            {
+                test: /\.scss$/,
+                loader: ExtractTextPlugin.extract({fallback: "style-loader", use: "css-loader!sass-loader"})
             },
             {
                 test: /\.js$/,

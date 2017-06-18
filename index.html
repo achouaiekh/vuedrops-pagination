@@ -5,12 +5,14 @@
     <title>vuedrops-pagination</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
-    <link rel="stylesheet" href="dist/main.css">
+    <link rel="stylesheet" href="src/themes.css">
 </head>
 <body style="background-color:gainsboro;">
 <div id="app">
-    <pagination :current="3" :length="10"></pagination>
+    <pagination :current="3" :length="10" :shown-page="7" navigation cycle class="dot"></pagination>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.3/vue.js"></script>
+<script src="dist/pagination.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

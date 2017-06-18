@@ -3,7 +3,7 @@ import pagination from './pagination.vue'
 
 
 function plugin (Vue) {
-    Vue.component({pagination})
+    Vue.component("pagination", pagination)
 }
 
 

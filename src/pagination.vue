@@ -2,11 +2,12 @@
 
     <ul class="pagination">
 
-        <li>
-            <a href="#"
-               :class="{disabled: value === 1}"
+        <li v-if="navigation">
+            <a href="link(value-1)"
+               :class="{disabled: value === 1 && !cycle}"
                class="pagination__navigation prev"
-               @click.prevent="prev()"
+               @click.prevent="previousPage"
+
             >
                 <i class="material-icons">chevron_left</i>
             </a>
@@ -15,27 +16,27 @@
 
         <li>
             <transition-group tag="ul" name="pages" class="pages">
-                <li class="pages__item" v-for="n in items" :key="n">
-                    <a v-if="!isNaN(n)"
-                       :href="link(n)"
-                       v-text="n"
-                       @click.prevent="to(n)"
-                       :class="{active: value === n,}"
-                       class="pages__link"
-                    />
+        <li class="pages__item" v-for="n in items" :key="n">
+            <a v-if="!isNaN(n)"
+               :href="link(n)"
+               v-text="n"
+               @click.prevent="toPage(n)"
+               :class="{active: value === n}"
+               class="pages__link"
+            ></a>
 
-                    <span v-else class="pages__more"><i class="material-icons">more_horiz</i></span>
+            <span v-else class="pages__more"><i class="material-icons">more_horiz</i></span>
 
-                </li>
-            </transition-group>
+        </li>
+        </transition-group>
         </li>
 
 
-        <li>
-            <a href="#"
-               :class="{disabled: value === length}"
+        <li v-if="navigation">
+            <a href="link(value+1)"
+               :class="{disabled: value === length && !cycle}"
                class="pagination__navigation next"
-               @click.prevent="next()"
+               @click.prevent="nextPage()"
             >
                 <i class="material-icons">chevron_right</i>
             </a>
@@ -55,23 +56,35 @@
 
             href: {
                 type: String,
-                default: "#!"
+                default: "#"
             },
 
             length: {
                 type: Number,
-                default: 0
+                default: 1
             },
 
             current: {
                 type: Number,
-                default: 0
+                default: 1
+            },
+
+            cycle: Boolean,
+
+            navigation: Boolean,
+
+            prevent: Boolean,
+
+            shownPage: {
+                type: Number,
+                default: 5
             }
         },
 
         data(){
             return {
-                value: this.current
+                value: this.current,
+                shown: this.even(this.shownPage)
             }
         },
 
@@ -79,27 +92,31 @@
 
             items () {
 
-                if (this.length <= 5) return this.range(1, this.length)
+                let shown = this.shown,
+                    value = this.value,
+                    length = this.length,
+                    center = Math.ceil(shown / 2)
 
-                let min = this.value - 3
+                if (length <= shown) return this.range(1, length)
+
+                let min = value - center
                 min = min > 0 ? min : 1
 
-                let max = min + 6
-                max = max <= this.length ? max : this.length
+                let max = min + shown + 1
+                max = max <= length ? max : length
 
-                if (max === this.length) {
-                    min = this.length - 6
-                }
+                if (max === length)
+                    min = length - shown - 1
+
 
                 const range = this.range(min, max)
 
-                if (this.value >= 4 && this.length > 6) {
+                if (value >= center + 1 && length > shown + 1)
                     range.splice(0, 2, 1, '...')
-                }
 
-                if (this.value + 3 < this.length && this.length > 6) {
-                    range.splice(range.length - 2, 2, '...', this.length)
-                }
+                if (this.value + center < length && length > shown + 1)
+                    range.splice(range.length - 2, 2, '...', length)
+
 
                 return range
             }
@@ -107,34 +124,51 @@
 
 
         methods: {
+
             link(n){
                 return this.href.replace('<page>', n)
             },
 
             range (start, end) {
-
                 return Array.from({length: (end - start + 1)}, (v, k) => k + start);
             },
 
-            prev(){
-                if (this.value === 1) return
+            previousPage(){
+                if (this.value <= 1 && !this.cycle) return
                 this.value--
-                this.$emit("prev", this.value)
+                if (this.value < 1) this.value = this.length
+                this.$emit("previousPage", this.value)
                 return false
             },
 
-            to(value){
+            toPage(value){
                 this.value = value
-                this.$emit("to", this.value)
+                this.$emit("toPage", this.value)
                 return false
             },
 
-            next(){
-                if (this.value === this.length) return
+            nextPage(){
+                if (this.value >= this.length && !this.cycle) return
+
                 this.value++
-                this.$emit("next", this.value)
+                if (this.value > this.length) this.value = 1
+
+                this.$emit("nextPage", this.value)
+
                 return false
+            },
+
+            currentPage(value){
+                this.value = value
+            },
+
+            even(value){
+                return value % 2 ? value : value + 1
             }
+        },
+
+        mounted(){
+            this.$on('currentPage', this.currentPage)
         }
     }
 </script>
